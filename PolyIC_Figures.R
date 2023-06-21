@@ -1341,7 +1341,8 @@ markers.to.plot <- c(
   "IL1RN","LPL","MFSD12"
 )
 
-pdf("DotPlot_Mono_all.pdf", height = 10, width = 15, useDingbats=FALSE)
+# This is Figure 3B
+pdf("DotPlot_Mono_Only_all.pdf", height = 10, width = 15, useDingbats=FALSE)
 DotPlot(Mono.integrated, features = rev(markers.to.plot), 
         #cols = c("blue","red", "lightblue", "pink"), 
         dot.scale = 8, 
