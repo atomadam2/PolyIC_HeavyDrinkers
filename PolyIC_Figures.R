@@ -127,6 +127,11 @@ pdf("UMAP_allCond.pdf", height = 10, width = 12, useDingbats=FALSE)
 DimPlot(pbmc.integrated, reduction = 'umap', split.by = 'ultra', ncol = 4)
 dev.off()
 
+# Figure 2A
+pdf("UMAP_all.pdf", height = 10, width = 12, useDingbats=FALSE)
+DimPlot(pbmc.integrated, reduction = 'umap', label = TRUE, label.size = 8)
+dev.off()
+
 DimPlot(pbmc.integrated, reduction = 'umap', split.by = 'ultra', ncol = 4)
 
 Idents(Mono.integrated) <- Mono.integrated$seurat_clusters
