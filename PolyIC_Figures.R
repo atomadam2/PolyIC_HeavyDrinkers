@@ -1389,6 +1389,155 @@ VlnPlot(Mono.integrated_temp,
         pt.size = 0, ncol = 1)
 
 
+########################################
+##                                    ##
+##      Subset HD and HC by Treat     ##
+##                                    ##
+########################################
+
+Mono.integrated$mono_disease_weight <- paste(Mono.integrated$seurat_clusters,
+                                             Mono.integrated$disease, 
+                                             Mono.integrated$weight, sep = "_")
+Mono.integrated$mono_disease_weight_treatments <- paste(Mono.integrated$seurat_clusters,
+                                             Mono.integrated$disease, 
+                                             Mono.integrated$weight, 
+                                             Mono.integrated$first, 
+                                             Mono.integrated$second, 
+                                             sep = "_")
+
+Idents(Mono.integrated) <- Mono.integrated$disease
+HCHD <- subset(Mono.integrated, idents = c("HC","HD"))
+table(Idents(HCHD))
+
+ISGgenes <- c(
+  "RSAD2","GBP5","CNP","BST2",
+  "OAS3","OAS2","OAS1",
+  "APOBEC3H","APOBEC3G","APOBEC3F","APOBEC3D","APOBEC3C","APOBEC3A",
+  "ADAR",
+  "DDX58","IFIH1",
+  "IFIT5","IFIT3","IFIT2","IFIT1",
+  "IFI6",
+  "SSBP3","PARP12","OASL","NT5C3A",
+  "MS4A4A","MAP3K14","IFI44L","EIF2AK2",
+  "DDX60","DDIT4","CGAS",
+  "ZC3HAV1",
+  "TRIM5","MX1",
+  "ISG20","IFI16",
+  "MOV10",
+  "NCOA7",
+  "IFITM3","IFITM2","IFITM1"
+  #"IRF1",
+  #"IRF7", "TRIM25"
+)
+
+# POLY IC ONLY
+Idents(HCHD) <- HCHD$treatments
+HCHD_Poly <- subset(HCHD, idents = c("Basal_Basal","Poly_Basal"))
+table(Idents(HCHD_Poly))
+
+DefaultAssay(HCHD_Poly) <- "SCT"
+Idents(HCHD_Poly) <- HCHD_Poly$mono_disease_weight
+table(Idents(HCHD_Poly))
+Idents(HCHD_Poly) <- factor(Idents(HCHD_Poly), 
+                            levels = c("0_HC_Lean","0_HC_Obese","0_HD_Lean","0_HD_Obese",
+                                       "1_HC_Lean","1_HC_Obese","1_HD_Lean","1_HD_Obese",
+                                       "2_HC_Lean","2_HC_Obese","2_HD_Lean","2_HD_Obese",
+                                       "3_HC_Lean","3_HC_Obese","3_HD_Lean","3_HD_Obese",
+                                       "4_HC_Lean","4_HC_Obese","4_HD_Lean","4_HD_Obese",
+                                       "5_HC_Lean","5_HC_Obese","5_HD_Lean","5_HD_Obese",
+                                       "6_HC_Lean","6_HC_Obese","6_HD_Lean","6_HD_Obese",
+                                       "7_HC_Lean","7_HC_Obese","7_HD_Lean","7_HD_Obese",
+                                       "8_HC_Lean","8_HC_Obese","8_HD_Lean","8_HD_Obese",
+                                       "9_HC_Lean","9_HC_Obese","9_HD_Lean","9_HD_Obese",
+                                       "10_HC_Lean","10_HC_Obese","10_HD_Lean","10_HD_Obese",
+                                       "11_HC_Lean","11_HC_Obese","11_HD_Lean","11_HD_Obese",
+                                       "12_HC_Lean","12_HC_Obese","12_HD_Lean","12_HD_Obese",
+                                       "13_HC_Lean","13_HC_Obese","13_HD_Lean","13_HD_Obese"))
+
+DefaultAssay(HCHD_Poly) <- "RNA"
+HCHD_Poly_temp <- PercentageFeatureSet(HCHD_Poly, 
+                                             features = ISGgenes, 
+                                             col.name = "ISG", 
+                                             assay = "RNA")
+HCHD_Poly_temp$ISG_tot <- HCHD_Poly_temp$ISG*HCHD_Poly_temp$nCount_RNA
+
+VlnPlot(HCHD_Poly_temp, 
+        features = c("ISG_tot"), 
+        split.by = "first", 
+        pt.size = 0, ncol = 1)
+
+
+# This is Figure 3C, top
+
+pdf("VlnPlot_Mono_Only_Poly_ISG.pdf", height = 3, width = 15, useDingbats=FALSE)
+plots <- VlnPlot(HCHD_Poly_temp, 
+                 features = c("ISG_tot"), 
+                 split.by = "first", 
+                 pt.size = 0, combine = FALSE )
+plots <- lapply(
+  X = plots,
+  FUN = function(p) p 
+  + ggplot2::theme(axis.title.y = element_blank())
+  + ggplot2::scale_fill_manual(values = c('black', 'red'))
+)
+CombinePlots(plots = plots, ncol = 1)
+dev.off()
+
+
+# LPS ONLY
+Idents(HCHD) <- HCHD$treatments
+HCHD_LPS <- subset(HCHD, idents = c("Basal_Basal","Basal_LPS"))
+table(Idents(HCHD_LPS))
+
+DefaultAssay(HCHD_LPS) <- "SCT"
+Idents(HCHD_LPS) <- HCHD_LPS$mono_disease_weight
+table(Idents(HCHD_LPS))
+Idents(HCHD_LPS) <- factor(Idents(HCHD_LPS), 
+                            levels = c("0_HC_Lean","0_HC_Obese","0_HD_Lean","0_HD_Obese",
+                                       "1_HC_Lean","1_HC_Obese","1_HD_Lean","1_HD_Obese",
+                                       "2_HC_Lean","2_HC_Obese","2_HD_Lean","2_HD_Obese",
+                                       "3_HC_Lean","3_HC_Obese","3_HD_Lean","3_HD_Obese",
+                                       "4_HC_Lean","4_HC_Obese","4_HD_Lean","4_HD_Obese",
+                                       "5_HC_Lean","5_HC_Obese","5_HD_Lean","5_HD_Obese",
+                                       "6_HC_Lean","6_HC_Obese","6_HD_Lean","6_HD_Obese",
+                                       "7_HC_Lean","7_HC_Obese","7_HD_Lean","7_HD_Obese",
+                                       "8_HC_Lean","8_HC_Obese","8_HD_Lean","8_HD_Obese",
+                                       "9_HC_Lean","9_HC_Obese","9_HD_Lean","9_HD_Obese",
+                                       "10_HC_Lean","10_HC_Obese","10_HD_Lean","10_HD_Obese",
+                                       "11_HC_Lean","11_HC_Obese","11_HD_Lean","11_HD_Obese",
+                                       "12_HC_Lean","12_HC_Obese","12_HD_Lean","12_HD_Obese",
+                                       "13_HC_Lean","13_HC_Obese","13_HD_Lean","13_HD_Obese"))
+
+DefaultAssay(HCHD_LPS) <- "RNA"
+HCHD_LPS_temp <- PercentageFeatureSet(HCHD_LPS, 
+                                       features = ISGgenes, 
+                                       col.name = "ISG", 
+                                       assay = "RNA")
+HCHD_LPS_temp$ISG_tot <- HCHD_LPS_temp$ISG*HCHD_LPS_temp$nCount_RNA
+
+VlnPlot(HCHD_LPS_temp, 
+        features = c("ISG_tot"), 
+        split.by = "second", 
+        pt.size = 0, ncol = 1)
+
+
+# This is Figure 3C, bottom
+
+pdf("VlnPlot_Mono_Only_LPS_ISG.pdf", height = 3, width = 15, useDingbats=FALSE)
+plots <- VlnPlot(HCHD_LPS_temp, 
+                 features = c("ISG_tot"), 
+                 split.by = "second", 
+                 pt.size = 0, combine = FALSE  )
+plots <- lapply(
+  X = plots,
+  FUN = function(p) p 
+  + ggplot2::theme(axis.title.y = element_blank())
+  + ggplot2::scale_fill_manual(values = c('black', 'red'))
+)
+CombinePlots(plots = plots, ncol = 1)
+dev.off()
+
+
 
 ########################################
 ##                                    ##
