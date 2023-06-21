@@ -1238,7 +1238,9 @@ load("XXX/PolyICFigures/Mono_20220628.Robj")
 #load("XXX/PolyICFigures/Mono_20220628.Robj")
 
 # This is Figure 3A
+pdf("UMAP_Mono_all.pdf", height = 6, width = 7, useDingbats=FALSE)
 DimPlot(Mono.integrated, label = TRUE, label.size = 5) #700x600
+dev.off()
 
 # For your records
 VlnPlot(Mono.integrated, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
